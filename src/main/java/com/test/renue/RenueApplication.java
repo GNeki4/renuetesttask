@@ -30,7 +30,6 @@ public class RenueApplication {
 			printMemory();
 		}
 
-
 		//ArrayList<String> list = readAll3(column);
 		printMemory();
 
@@ -50,28 +49,6 @@ public class RenueApplication {
 
 		System.out.println("Used memory: " + usedMemory + " mb's.");
 	}
-
-	/*
-	public static ArrayList<String> readAll3(Integer column) {
-		ArrayList<String> wholeData = null;
-		ArrayList<String> singleColumn = new ArrayList<>();
-		try {
-			wholeData = (ArrayList<String>) Files.readAllLines(Path.of("airports.dat"));
-
-			for (String row : wholeData) {
-				singleColumn.add(row.split(",")[column].replaceAll("\"", ""));
-			}
-
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return singleColumn;
-		}
-
-	 */
-
 
 	public static TreeMap<String, AirportInfo> readAll2(Integer column) {
 		TreeMap<String, AirportInfo> airportMap = new TreeMap<>();
