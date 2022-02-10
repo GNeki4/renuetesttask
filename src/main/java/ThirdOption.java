@@ -5,20 +5,23 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-public class Main {
+public class ThirdOption {
     public static void main(String[] args) {
         int column = readColumn() - 1;
-        TreeMap<String, String> treeMap = readAll(column);
+
+        Long start = System.nanoTime();
+        TreeMap<String, String> treeMap = readColumn2(column);
+        Long end = System.nanoTime();
+
+        System.out.println("Preparations took: " + getTime(start, end));
+        System.out.println("Amount of keys: " + treeMap.size());
 
         var value = readRow();
-
-        for (int i = 1; i < 2; i++) {
-            findSomething(treeMap, value);
-        }
-
+        findCol2(treeMap, value);
         printMemory();
     }
 
@@ -32,45 +35,37 @@ public class Main {
             if (row.getKey().startsWith(value)) {
                 i[0]++;
                 list.add(row.getValue());
-                //System.out.println(row.getKey());
             }
         });
 
         Date newTime = new Date(System.currentTimeMillis());
 
-
-        /*
-        for (String row : treeMap.keySet()) {
-            if (row.startsWith(value)) {
-                i[0]++;
-                System.out.println(row);
-            }
-        }
-         */
-
-
         for (String row : list) {
             System.out.println(row);
         }
         System.out.println("Total amount of found values is: " + i[0]);
-        System.out.println("Preparations took: " + (newTime.getTime() - currentTime.getTime()) + " m'scs.");
+        System.out.println("The search took: " + (newTime.getTime() - currentTime.getTime()) + " m'scs.");
     }
 
-    /*
-    public static void findSomething(Map<String, String> treeMap, String value) {
-        int i = 0;
+    public static void findCol2(TreeMap<String, String> treeMap, String value) {
+        Long start = System.nanoTime();
+        ArrayList<String> list = new ArrayList<>();
 
-        for (String row : treeMap.keySet()) {
-            if (row.startsWith(value)) {
-                i++;
-                System.out.println(row);
-            }
+        Map.Entry<String, String> entry = treeMap.ceilingEntry(value);
+        while (entry != null && entry.getKey().startsWith(value)) {
+            list.add(entry.getValue());
+            entry = treeMap.higherEntry(entry.getKey());
         }
 
-        System.out.println("Total amount of found values is: " + i);
-    }
+        Long end = System.nanoTime();
 
-     */
+        for (String row : list) {
+            System.out.println(row);
+        }
+
+        System.out.println("Total amount of found values is: " + list.size());
+        System.out.println("The search took: "  + getTime(start, end));
+    }
 
     public static void printMemory() {
         Runtime runtime = Runtime.getRuntime();
@@ -82,12 +77,23 @@ public class Main {
         System.out.println("Used memory: " + usedMemory + " mb's.");
     }
 
-    public static TreeMap<String, String> readAll(Integer column) {
+    public static String getTime(Long start, Long end) {
+        long nanos = end - start;
+        long milis = nanos / 1000000;
+        return milis + " m'scs " + nanos % 1000000 + "n'scs";
+    }
+
+    public static TreeMap<String, String> readColumn2(Integer column) {
         TreeMap<String, String> airportsMap = new TreeMap<>();
 
         try (Stream<String> stream = Files.lines(Paths.get("airports.dat"))) {
             stream.forEach(line -> {
-                airportsMap.put(line.split(",")[column].replaceAll("\"", ""), line);
+                String neededColumn = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")[column]
+                        .replaceAll("\"", "");
+                if (airportsMap.containsKey(neededColumn))
+                    airportsMap.put(neededColumn, line + "\n" + airportsMap.get(neededColumn));
+                else
+                    airportsMap.put(neededColumn, line);
             });
 
         } catch (IOException e) {
