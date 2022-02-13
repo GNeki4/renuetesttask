@@ -65,7 +65,7 @@ public class Utils {
 
         System.out.println(
                 "Количество найденных строк: " + list.size() +
-                        " Время, затраченное на поиск: "  + getTime(start, end));
+                        ". Время, затраченное на поиск: "  + getTime(start, end));
     }
 
     public static String readValue() {
@@ -90,7 +90,7 @@ public class Utils {
         var freeMemory = runtime.freeMemory();
         var usedMemory = (double) (totalMemory - freeMemory) / (double) (1024 * 1024);
 
-        System.out.println("Used memory: " + usedMemory + " mb.");
+        System.out.println("Использовано памяти: " + usedMemory + " мб.");
     }
 
     private static String getTime(Long start, Long end) {
